@@ -1,3 +1,3 @@
 [DEFAULT]
 token=<coloque aqui seu token>
-support_chat_id=<coloque aqui seu id de usuário ou de grupo>
+bot_username=<coloque aqui seu bot username>

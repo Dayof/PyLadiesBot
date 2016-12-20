@@ -5,8 +5,8 @@ import telepot
 from telepot.namedtuple import InlineKeyboardMarkup, InlineKeyboardButton
 import configparser
  
-import logging
-logging.basicConfig(level=logging.INFO) 
+#import logging
+#logging.basicConfig(level=logging.INFO) 
 
 chat_id, user_id, username = (None,None, None) 
 
@@ -15,7 +15,7 @@ chat_id, user_id = (None,None)
 def onChatMessage(msg):
     global user_id, chat_id, username
     content_type, chat_type, chat_id = telepot.glance(msg)
-
+    print(content_type, chat_type, chat_id)
     keyboard = InlineKeyboardMarkup(inline_keyboard=[
                     [InlineKeyboardButton(text='Confirmar',
                                         callback_data='yes')],
@@ -24,9 +24,10 @@ def onChatMessage(msg):
                 ])
 
     if 'new_chat_member' in msg:
-        if msg['new_chat_member']['username'] != 'PyLadiesBot':
+        if msg['new_chat_member']['username'] != config['DEFAULT']['bot_username']:
             username = msg['new_chat_member']['username']
             user_id = msg['new_chat_member']['id']
+            print('username: ' + str(username) + ' user_id: ' + str(user_id)) 
             bot.sendMessage(chat_id,
                             'Confirmar usuária que entrou?',
                             reply_markup=keyboard)
@@ -35,7 +36,7 @@ def onCallbackQuery(msg):
     global user_id, chat_id, username
 
     query_id, from_id, query_data = telepot.glance(msg, flavor='callback_query')
-    logging.info('Callback Query:', query_id, from_id, query_data)
+    print('Callback Query:', query_id, from_id, query_data) 
 
     if query_data == 'yes':
         if user_id:
@@ -44,8 +45,8 @@ def onCallbackQuery(msg):
             user_id, username = (None, None)
         else:
             bot.answerCallbackQuery(query_id, text='Erro.')
-    else:
-        if user_id:
+    else: 
+        if user_id: 
             bot.sendMessage(chat_id, 'Usuário '+
                         str(username) + ' sendo retirado..')
             bot.kickChatMember(chat_id, user_id)
@@ -58,8 +59,7 @@ def onCallbackQuery(msg):
 config = configparser.ConfigParser()
 config.read_file(open('config.ini'))
 
-bot = telepot.Bot(config['DEFAULT']['token'])
-logging.info('token: ' + config['DEFAULT']['token']) 
+bot = telepot.Bot(config['DEFAULT']['token']) 
 
 bot.setWebhook()
 
