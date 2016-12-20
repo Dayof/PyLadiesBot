@@ -4,12 +4,13 @@ import time
 import telepot
 from telepot.namedtuple import InlineKeyboardMarkup, InlineKeyboardButton
 
+chat_id, user_id = (None,None)
+
 TOKEN = '293519004:AAFFhIBJrrxYzVs9clx9g2tDpWIi84ZSiio'
 
 def onChatMessage(msg):
+    global user_id, chat_id
     content_type, chat_type, chat_id = telepot.glance(msg)
-    print content_type, chat_type, chat_id
-    print msg
 
     keyboard = InlineKeyboardMarkup(inline_keyboard=[
                     [InlineKeyboardButton(text='Confirmar',
@@ -19,20 +20,28 @@ def onChatMessage(msg):
                 ])
 
     if 'new_chat_member' in msg:
-        bot.sendMessage(chat_id,
-            'Seja bem vinda PyLady '+ msg['new_chat_member']['username'])
-        bot.sendMessage(chat_id,
-                        'Confirmar usuário que entrou?',
-                        reply_markup=keyboard)
+        if msg['new_chat_member']['username'] != 'PyLadiesBot':
+            user_id = msg['new_chat_member']['id']
+            bot.sendMessage(chat_id,
+                            'Confirmar usuária que entrou?',
+                            reply_markup=keyboard)
 
 def onCallbackQuery(msg):
     query_id, from_id, query_data = telepot.glance(msg, flavor='callback_query')
     print 'Callback Query:', query_id, from_id, query_data
 
     if query_data == 'yes':
-        bot.answerCallbackQuery(query_id, text='Confirmado!')
+        bot.answerCallbackQuery(query_id, text='Confirmada!')
+        bot.sendMessage(chat_id,
+            'Seja bem vinda PyLady '+ msg['new_chat_member']['username'])
     else:
-        bot.answerCallbackQuery(query_id, text='Usuário retirado.')
+        if user_id:
+            bot.sendMessage(chat_id, 'Usuário '+
+                        str(user_id) + ' sendo retirado..')
+            bot.kickChatMember(chat_id, user_id)
+            bot.answerCallbackQuery(query_id, text='Usuário retirado.')
+        else:
+            bot.answerCallbackQuery(query_id, text='Erro.')
 
 bot = telepot.Bot(TOKEN)
 
