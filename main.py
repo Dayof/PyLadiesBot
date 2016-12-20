@@ -5,6 +5,9 @@ import telepot
 from telepot.namedtuple import InlineKeyboardMarkup, InlineKeyboardButton
 import configparser
 
+import logging
+logging.basicConfig(level=logging.INFO)
+
 chat_id, user_id = (None,None)
 
 def onChatMessage(msg):
@@ -29,7 +32,7 @@ def onCallbackQuery(msg):
     global user_id, chat_id
 
     query_id, from_id, query_data = telepot.glance(msg, flavor='callback_query')
-    print('Callback Query:', query_id, from_id, query_data)
+    logging.info('Callback Query:', query_id, from_id, query_data)
 
     if query_data == 'yes':
         bot.answerCallbackQuery(query_id, text='Confirmada!')
@@ -50,6 +53,7 @@ config = configparser.ConfigParser()
 config.read_file(open('config.ini'))
 
 bot = telepot.Bot(config['DEFAULT']['token'])
+logging.info('token: ' + config['DEFAULT']['token']) 
 
 bot.message_loop({'chat': onChatMessage,
                 'callback_query': onCallbackQuery},
