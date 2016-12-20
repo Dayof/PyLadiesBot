@@ -15,7 +15,7 @@ chat_id, user_id = (None,None)
 def onChatMessage(msg):
     global user_id, chat_id, username
     content_type, chat_type, chat_id = telepot.glance(msg)
-    print(content_type, chat_type, chat_id)
+    
     keyboard = InlineKeyboardMarkup(inline_keyboard=[
                     [InlineKeyboardButton(text='Confirmar',
                                         callback_data='yes')],
@@ -26,8 +26,7 @@ def onChatMessage(msg):
     if 'new_chat_member' in msg:
         if msg['new_chat_member']['username'] != config['DEFAULT']['bot_username']:
             username = msg['new_chat_member']['username']
-            user_id = msg['new_chat_member']['id']
-            print('username: ' + str(username) + ' user_id: ' + str(user_id)) 
+            user_id = msg['new_chat_member']['id'] 
             bot.sendMessage(chat_id,
                             'Confirmar usuária que entrou?',
                             reply_markup=keyboard)
