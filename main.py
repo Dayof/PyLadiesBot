@@ -27,13 +27,15 @@ def onChatMessage(msg):
                             reply_markup=keyboard)
 
 def onCallbackQuery(msg):
+    global user_id, chat_id
+
     query_id, from_id, query_data = telepot.glance(msg, flavor='callback_query')
     print 'Callback Query:', query_id, from_id, query_data
 
     if query_data == 'yes':
         bot.answerCallbackQuery(query_id, text='Confirmada!')
-        bot.sendMessage(chat_id,
-            'Seja bem vinda PyLady '+ msg['new_chat_member']['username'])
+        bot.sendMessage(chat_id, 'Seja bem vinda PyLady!')
+        user_id = None
     else:
         if user_id:
             bot.sendMessage(chat_id, 'Usuário '+
