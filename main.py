@@ -8,6 +8,8 @@ TOKEN = '293519004:AAFFhIBJrrxYzVs9clx9g2tDpWIi84ZSiio'
 
 def onChatMessage(msg):
     content_type, chat_type, chat_id = telepot.glance(msg)
+    print content_type, chat_type, chat_id
+    print msg
 
     keyboard = InlineKeyboardMarkup(inline_keyboard=[
                     [InlineKeyboardButton(text='Confirmar',
@@ -16,9 +18,12 @@ def onChatMessage(msg):
                                         callback_data='no')]
                 ])
 
-    bot.sendMessage(chat_id,
-                    'Confirmar usuário que entrou?',
-                    reply_markup=keyboard)
+    if 'new_chat_member' in msg:
+        bot.sendMessage(chat_id,
+            'Seja bem vinda PyLady '+ msg['new_chat_member']['username'])
+        bot.sendMessage(chat_id,
+                        'Confirmar usuário que entrou?',
+                        reply_markup=keyboard)
 
 def onCallbackQuery(msg):
     query_id, from_id, query_data = telepot.glance(msg, flavor='callback_query')
@@ -30,6 +35,7 @@ def onCallbackQuery(msg):
         bot.answerCallbackQuery(query_id, text='Usuário retirado.')
 
 bot = telepot.Bot(TOKEN)
+
 bot.message_loop({'chat': onChatMessage,
                 'callback_query': onCallbackQuery},
                 run_forever='Listening ...')
