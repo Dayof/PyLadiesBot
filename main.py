@@ -8,14 +8,12 @@ import configparser
 #import logging
 #logging.basicConfig(level=logging.INFO) 
 
-chat_id, user_id, username = (None,None, None) 
-
-chat_id, user_id = (None,None)
+chat_id, user_id, username = (None,None,None)  
 
 def onChatMessage(msg):
     global user_id, chat_id, username
     content_type, chat_type, chat_id = telepot.glance(msg)
-    
+
     keyboard = InlineKeyboardMarkup(inline_keyboard=[
                     [InlineKeyboardButton(text='Confirmar',
                                         callback_data='yes')],
