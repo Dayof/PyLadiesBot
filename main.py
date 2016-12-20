@@ -3,10 +3,14 @@ import sys
 import time
 import telepot
 from telepot.namedtuple import InlineKeyboardMarkup, InlineKeyboardButton
+import configparser
+ 
+import logging
+logging.basicConfig(level=logging.INFO) 
 
-chat_id, user_id, username = (None,None, None)
+chat_id, user_id, username = (None,None, None) 
 
-TOKEN = '293519004:AAFFhIBJrrxYzVs9clx9g2tDpWIi84ZSiio'
+chat_id, user_id = (None,None)
 
 def onChatMessage(msg):
     global user_id, chat_id, username
@@ -31,7 +35,7 @@ def onCallbackQuery(msg):
     global user_id, chat_id, username
 
     query_id, from_id, query_data = telepot.glance(msg, flavor='callback_query')
-    print 'Callback Query:', query_id, from_id, query_data
+    logging.info('Callback Query:', query_id, from_id, query_data)
 
     if query_data == 'yes':
         if user_id:
@@ -49,7 +53,13 @@ def onCallbackQuery(msg):
         else:
             bot.answerCallbackQuery(query_id, text='Erro.')
 
-bot = telepot.Bot(TOKEN)
+
+# Configuring bot
+config = configparser.ConfigParser()
+config.read_file(open('config.ini'))
+
+bot = telepot.Bot(config['DEFAULT']['token'])
+logging.info('token: ' + config['DEFAULT']['token']) 
 
 bot.setWebhook()
 
