@@ -2,13 +2,10 @@
 import sys
 import time
 import telepot
-from telepot.namedtuple import InlineKeyboardMarkup, InlineKeyboardButton
 import configparser
- 
-#import logging
-#logging.basicConfig(level=logging.INFO) 
+from telepot.namedtuple import InlineKeyboardMarkup, InlineKeyboardButton
 
-chat_id, user_id, username = (None,None,None)  
+chat_id, user_id, username = (None,None,None)
 
 def onChatMessage(msg):
     global user_id, chat_id, username
@@ -24,7 +21,7 @@ def onChatMessage(msg):
     if 'new_chat_member' in msg:
         if msg['new_chat_member']['username'] != config['DEFAULT']['bot_username']:
             username = msg['new_chat_member']['username']
-            user_id = msg['new_chat_member']['id'] 
+            user_id = msg['new_chat_member']['id']
             bot.sendMessage(chat_id,
                             'Confirmar usuária que entrou?',
                             reply_markup=keyboard)
@@ -33,30 +30,27 @@ def onCallbackQuery(msg):
     global user_id, chat_id, username
 
     query_id, from_id, query_data = telepot.glance(msg, flavor='callback_query')
-    print('Callback Query:', query_id, from_id, query_data) 
+    print('Callback Query:', query_id, from_id, query_data)
 
-    if query_data == 'yes':
-        if user_id:
+    if user_id and username:
+        if query_data == 'yes':
             bot.answerCallbackQuery(query_id, text='Confirmada!')
             bot.sendMessage(chat_id, 'Seja bem vinda PyLady '+ str(username) +'!')
-            user_id, username = (None, None)
-        else:
-            bot.answerCallbackQuery(query_id, text='Erro.')
-    else: 
-        if user_id: 
+        elif query_data == 'no':
             bot.sendMessage(chat_id, 'Usuário '+
                         str(username) + ' sendo retirado..')
             bot.kickChatMember(chat_id, user_id)
             bot.answerCallbackQuery(query_id, text='Usuário '+ str(username) +' retirado.')
-        else:
-            bot.answerCallbackQuery(query_id, text='Erro.')
+    else:
+        bot.answerCallbackQuery(query_id, text='Erro.')
 
+    user_id, username = (None, None)
 
 # Configuring bot
 config = configparser.ConfigParser()
 config.read_file(open('config.ini'))
 
-bot = telepot.Bot(config['DEFAULT']['token']) 
+bot = telepot.Bot(config['DEFAULT']['token'])
 
 bot.setWebhook()
 
