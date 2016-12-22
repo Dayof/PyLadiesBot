@@ -9,6 +9,7 @@ chat_id, user_id, username = (None,None,None)
 
 def onChatMessage(msg):
     global user_id, chat_id, username
+    print('msg: ', msg)
     content_type, chat_type, chat_id = telepot.glance(msg)
 
     keyboard = InlineKeyboardMarkup(inline_keyboard=[
@@ -29,7 +30,7 @@ def onChatMessage(msg):
 def onCallbackQuery(msg):
     global user_id, chat_id, username
 
-    query_id, from_id, query_data = telepot.glance(msg, flavor='callback_query')
+    query_id, from_id, query_data = telepot.glance(msg, flavor='callback_query') 
     print('Callback Query:', query_id, from_id, query_data)
 
     if msg['from']['id'] != user_id:
