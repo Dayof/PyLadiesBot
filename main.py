@@ -32,19 +32,22 @@ def onCallbackQuery(msg):
     query_id, from_id, query_data = telepot.glance(msg, flavor='callback_query')
     print('Callback Query:', query_id, from_id, query_data)
 
-    if user_id and username:
-        if query_data == 'yes':
-            bot.answerCallbackQuery(query_id, text='Confirmada!')
-            bot.sendMessage(chat_id, 'Seja bem vinda PyLady '+ str(username) +'!')
-        elif query_data == 'no':
-            bot.sendMessage(chat_id, 'Usuário '+
-                        str(username) + ' sendo retirado..')
-            bot.kickChatMember(chat_id, user_id)
-            bot.answerCallbackQuery(query_id, text='Usuário '+ str(username) +' retirado.')
-    else:
-        bot.answerCallbackQuery(query_id, text='Erro.')
+    if msg['from']['id'] != user_id:
+        if user_id and username:
+            if query_data == 'yes':
+                bot.answerCallbackQuery(query_id, text='Confirmada!')
+                bot.sendMessage(chat_id, 'Seja bem vinda PyLady '+ str(username) +'!')
+            elif query_data == 'no':
+                bot.sendMessage(chat_id, 'Usuário '+
+                            str(username) + ' sendo retirado..')
+                bot.kickChatMember(chat_id, user_id)
+                bot.answerCallbackQuery(query_id, text='Usuário '+ str(username) +' retirado.')
 
-    user_id, username = (None, None)
+            user_id, username = (None, None)
+        else:
+            bot.answerCallbackQuery(query_id, text='Usuária(o) já aprovada(o) ou retirada(o).')
+    else:
+        bot.answerCallbackQuery(query_id, text='Aguarde aprovação do grupo.')
 
 # Configuring bot
 config = configparser.ConfigParser()
