@@ -12,6 +12,7 @@ chat_id, user_id, username = (None,None,None)
 
 def onChatMessage(msg):
     global user_id, chat_id, username
+    print('msg: ', msg)
     content_type, chat_type, chat_id = telepot.glance(msg)
 
     keyboard = InlineKeyboardMarkup(inline_keyboard=[
@@ -33,23 +34,26 @@ def onCallbackQuery(msg):
     global user_id, chat_id, username
 
     query_id, from_id, query_data = telepot.glance(msg, flavor='callback_query')
+    print('callback msg: ', msg)
+    print(msg['from']['username'], username)
     print('Callback Query:', query_id, from_id, query_data) 
 
-    if query_data == 'yes':
-        if user_id:
-            bot.answerCallbackQuery(query_id, text='Confirmada!')
-            bot.sendMessage(chat_id, 'Seja bem vinda PyLady '+ str(username) +'!')
-            user_id, username = (None, None)
-        else:
-            bot.answerCallbackQuery(query_id, text='Erro.')
-    else: 
-        if user_id: 
-            bot.sendMessage(chat_id, 'Usuário '+
-                        str(username) + ' sendo retirado..')
-            bot.kickChatMember(chat_id, user_id)
-            bot.answerCallbackQuery(query_id, text='Usuário '+ str(username) +' retirado.')
-        else:
-            bot.answerCallbackQuery(query_id, text='Erro.')
+    if (msg['from']['username'] != username): 
+        if query_data == 'yes':
+            if user_id:
+                bot.answerCallbackQuery(query_id, text='Confirmada!')
+                bot.sendMessage(chat_id, 'Seja bem vinda PyLady '+ str(username) +'!')
+                user_id, username = (None, None)
+            else:
+                bot.answerCallbackQuery(query_id, text='Erro.')
+        else: 
+            if user_id: 
+                bot.sendMessage(chat_id, 'Usuário '+
+                            str(username) + ' sendo retirado..')
+                bot.kickChatMember(chat_id, user_id)
+                bot.answerCallbackQuery(query_id, text='Usuário '+ str(username) +' retirado.')
+            else:
+                bot.answerCallbackQuery(query_id, text='Erro.')
 
 
 # Configuring bot
